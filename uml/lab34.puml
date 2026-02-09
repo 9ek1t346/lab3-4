@@ -1,0 +1,103 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "lab34.app" {
+  class Main
+}
+
+package "lab34.core" {
+  class Scene
+}
+
+package "lab34.core.printer" {
+  interface TextPrinter
+  class ConsolePrinter
+}
+
+package "lab34.domain" {
+  enum Mood
+  enum ClothingColor
+  record Location
+  record Outfit
+}
+
+package "lab34.model" {
+  interface Movable
+  interface Transformable<T>
+
+  abstract class WorldObject {
+    - id : UUID
+    - name : String
+    + getId() : UUID
+    + getName() : String
+    + describe() : String
+  }
+
+  abstract class Character {
+    - location : Location
+    - mood : Mood
+    + getLocation() : Location
+    + moveTo(Location)
+    + getMood() : Mood
+    + setMood(Mood)
+  }
+
+  abstract class Human
+  abstract class Animal
+}
+
+package "lab34.entities" {
+  class Narrator
+  class Child
+  class Donkey
+  class Shorty
+
+  class Fence
+  class Stick
+}
+
+package "lab34.exceptions" {
+  class TransformationException
+  class FenceClimbException
+  class ScenarioViolationException
+}
+
+' ===== Связи =====
+Main --> Scene
+
+Scene --> TextPrinter
+ConsolePrinter ..|> TextPrinter
+Scene --> Random
+
+' Наследование и интерфейсы
+WorldObject <|-- Fence
+WorldObject <|-- Stick
+WorldObject <|-- Character
+
+Character <|-- Human
+Character <|-- Animal
+
+Human <|-- Narrator
+Human <|-- Child
+Human <|-- Shorty
+Animal <|-- Donkey
+
+Movable <|.. Character
+Transformable <|.. Donkey
+
+' Доменные типы
+Character --> Location
+Character --> Mood
+Outfit --> ClothingColor
+
+' Логика сценария/взаимодействия
+Donkey --> Shorty : transform()
+Shorty --> Fence : climbOver()
+Shorty --> Child : chase()
+
+' Исключения
+TransformationException -|> Exception
+FenceClimbException -|> Exception
+ScenarioViolationException -|> RuntimeException
+@enduml
